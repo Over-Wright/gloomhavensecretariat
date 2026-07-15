@@ -230,7 +230,7 @@ export class ConditionsComponent implements OnInit {
     if (!immune) {
       if (!!this.entity && !!this.figure) {
         immune = gameManager.entityManager.isImmune(this.entity, this.figure, conditionName, true);
-      } else if (this.entities && !!this.figure) {
+      } else if (this.entities.length && !!this.figure) {
         immune = this.entities.every(
           (entity) => !!this.figure && gameManager.entityManager.isImmune(entity, this.figure, conditionName, true)
         );

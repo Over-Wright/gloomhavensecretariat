@@ -408,11 +408,7 @@ export class PartySheetDialogComponent implements OnInit {
   setReputation(value: number) {
     if (this.party.reputation !== value) {
       gameManager.stateManager.before('setPartyReputation', value);
-      if (value > 20) {
-        value = 20;
-      } else if (value < -20) {
-        value = -20;
-      }
+      gameManager.changeReputation(value - this.party.reputation);
       this.party.reputation = value;
       gameManager.stateManager.after();
       this.update();
@@ -424,14 +420,10 @@ export class PartySheetDialogComponent implements OnInit {
       return;
     }
 
+    // TODO: Make unlock from other faction gains.
     if (this.party.factionReputation[faction] !== value) {
       gameManager.stateManager.before('setFactionReputation', faction, value);
-      if (value > 20) {
-        value = 20;
-      } else if (value < -10) {
-        value = -10;
-      }
-      this.party.factionReputation[faction] = value;
+      gameManager.changeFactionReputation(faction, value - (this.party.factionReputation[faction] || 0), force);
       gameManager.stateManager.after();
 
       this.reputationSections
@@ -647,22 +639,16 @@ export class PartySheetDialogComponent implements OnInit {
     gameManager.stateManager.after();
   }
 
-  setProsperity(value: number) {
-    value -= gameManager.prosperityTicks() - this.party.prosperity;
 
-    if (this.party.prosperity === value) {
+  setProsperity(value: number, force: boolean = false) {
+    if (gameManager.prosperityTicks() === value) {
       value--;
     }
-    if (value > this.prosperitySteps[this.prosperitySteps.length - 1] + 1) {
-      value = this.prosperitySteps[this.prosperitySteps.length - 1] + 1;
-    } else if (value < 0) {
-      value = 0;
-    }
-
     gameManager.stateManager.before('setPartyProsperity', value);
-    this.party.prosperity = value;
+    gameManager.changeProsperity(value - gameManager.prosperityTicks(), force);
     gameManager.stateManager.after();
 
+    // TODO: Make unlock from other prosperity gains.
     Object.keys(this.prosperitySections)
       .reverse()
       .forEach((prosperity) => {
@@ -1739,16 +1725,10 @@ export class PartySheetDialogComponent implements OnInit {
     if (this.party.morale === value) {
       value--;
     }
-    if (value < 0) {
-      value = 0;
-    }
-    if (value > 20) {
-      value = 20;
-    }
-
     gameManager.stateManager.before('setPartyMorale', value);
 
-    this.party.morale = value;
+    gameManager.changeMorale(value - this.party.morale);
+    // TODO: Make unlock from other morale gains.
     const campaignData = gameManager.campaignData();
     if (value === 0 && campaignData && campaignData.lowMorale && this.lowMoraleSolved <= campaignData.lowMorale.length) {
       if (this.lowMoraleSolved < campaignData.lowMorale.length) {

@@ -924,7 +924,7 @@ export class GameManager {
   }
 
   extraProsperity(): number {
-    let ticks = 0;
+    let ticks = this.prosperitySteps()[0];
     if ((this.game.party.envelopeB && this.editionRules('gh')) || this.editionRules('cs')) {
       if (!this.editionRules('cs')) {
         ticks += 1;

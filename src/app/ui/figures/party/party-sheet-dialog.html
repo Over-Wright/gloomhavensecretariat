@@ -669,7 +669,7 @@
                     </div>
                   }
                 </div>
-                <span class="checkbox limit" [ngClass]="{ checked: (party.factionReputation[faction] || 0) > 12 }"></span>
+                <span class="checkbox limit" [ngClass]="{ checked: factionUnlocks.includes(faction) }"></span>
               </div>
             }
           </div>
@@ -679,10 +679,7 @@
               @for (reputationSection of reputationSections | trackUUID; track reputationSection._trackUUID) {
                 @if (reputationSection.faction === 'special') {
                   <div class="section">
-                    <span
-                      class="checkbox"
-                      [ngClass]="{ checked: isConclusion(reputationSection.section) || additionalReputation(reputationSection) }"
-                    ></span>
+                    <span class="checkbox" [ngClass]="{ checked: isConclusion(reputationSection.section) }"></span>
                     <span
                       class="text"
                       [ghs-label]="'party.reputation.additional.special.' + reputationSection.section.split(':')[0]"
@@ -700,12 +697,10 @@
                 @for (reputationSection of reputationSections | trackUUID; track reputationSection._trackUUID) {
                   @if (reputationSection.faction === faction && reputationSection.requires && reputationSection.requires.length) {
                     <div class="section">
-                      <span
-                        class="checkbox"
-                        [ngClass]="{ checked: isConclusion(reputationSection.section) || additionalReputation(reputationSection) }"
-                      ></span>
+                      <span class="checkbox" [ngClass]="{ checked: isConclusion(reputationSection.section) }"></span>
                       <span
                         class="text"
+                        [ngClass]="{ blocked: !isConclusion(reputationSection.section) && isBlocked(reputationSection.section) }"
                         ghs-pointer-input
                         (singleClick)="unlockConclusion(reputationSection.section, additionalReputation(reputationSection))"
                         (doubleClick)="unlockConclusion(reputationSection.section, additionalReputation(reputationSection), true)"

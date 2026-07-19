@@ -422,7 +422,7 @@ export class PartySheetDialogComponent implements OnInit {
 
     // TODO: Make unlock from other faction gains.
     if (this.party.factionReputation[faction] !== value) {
-      gameManager.stateManager.before('setFactionReputation', faction, value);
+      gameManager.stateManager.before('setPartyFactionReputation', faction, value);
       gameManager.changeFactionReputation(faction, value - (this.party.factionReputation[faction] || 0), force);
       gameManager.stateManager.after();
 
@@ -678,7 +678,7 @@ export class PartySheetDialogComponent implements OnInit {
       value = 0;
     }
 
-    gameManager.stateManager.before('setPartyImbuement', value);
+    gameManager.stateManager.before('setPartyImbuements', value);
     this.party.imbuement = value;
     gameManager.stateManager.after();
 

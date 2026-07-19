@@ -348,6 +348,20 @@ describe('ScenarioManager', () => {
       expect(gameManager.game.party.inspiration).toBe(0);
     });
 
+    it('clamps factionReputation to 12 without faction unlock', () => {
+      gameManager.game.party.factionReputation['demons'] = 10;
+      const scenario = buildScenario({ reputationFactions: ['demons:3'] });
+      scenarioManager.finishScenario(scenario, true, undefined);
+      expect(gameManager.game.party.factionReputation['demons']).toBe(12);
+    });
+
+    it('bursts factionReputation past 12 with faction unlock', () => {
+      gameManager.game.party.factionReputation['demons'] = 10;
+      const scenario = buildScenario({ reputationFactions: ['demons:3'], factionUnlock: 'demons' });
+      scenarioManager.finishScenario(scenario, true, undefined);
+      expect(gameManager.game.party.factionReputation['demons']).toBe(13);
+    });
+
     it('pushes global/party achievements and campaign stickers regardless of partySheet setting', () => {
       settingsManager.settings.partySheet = false;
       const scenario = buildScenario({ globalAchievements: ['ga1'], partyAchievements: ['pa1'], campaignSticker: ['My Sticker'] });

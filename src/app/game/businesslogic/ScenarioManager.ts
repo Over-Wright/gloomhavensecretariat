@@ -227,7 +227,7 @@ export class ScenarioManager {
               rewards.reputationFactions.forEach((reputationFaction) => {
                 const faction = reputationFaction.split(':')[0];
                 const value = +reputationFaction.split(':')[1];
-                gameManager.changeFactionReputation(faction, value);
+                gameManager.changeFactionReputation(faction, value, rewards.factionUnlock === faction);
               });
             }
 

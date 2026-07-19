@@ -450,7 +450,7 @@ export class PartySheetDialogComponent implements OnInit {
   additionalReputation(reputationSection: ReputationSection): boolean {
     if (reputationSection.faction === 'special' && (!reputationSection.requires || reputationSection.requires.length === 0)) {
       return Object.keys(this.party.factionReputation).some(
-        (faction) => (this.party.factionReputation[faction] || 0) > reputationSection.value
+        (faction) => (this.party.factionReputation[faction] || 0) >= reputationSection.value
       );
     }
 
@@ -1395,6 +1395,14 @@ export class PartySheetDialogComponent implements OnInit {
     );
   }
 
+  isBlocked(section: string): boolean {
+    if (!section) {
+      return false;
+    }
+    const sectionData = gameManager.scenarioManager.getSection(section, this.partyEdition, undefined, true);
+    return !!sectionData && gameManager.scenarioManager.isBlocked(sectionData);
+  }
+
   hasConclusions(section: string): boolean {
     const conclusions = gameManager
       .sectionData(gameManager.game.edition)
@@ -1508,9 +1516,10 @@ export class PartySheetDialogComponent implements OnInit {
     if (
       conclusion &&
       (force ||
-        !this.party.conclusions.find(
+        (!this.party.conclusions.find(
           (value) => value.edition === conclusion.edition && value.group === conclusion.group && value.index === conclusion.index
-        ))
+        ) &&
+          !gameManager.scenarioManager.isBlocked(conclusion)))
     ) {
       const scenario = new Scenario(conclusion as ScenarioData);
       if (this.hasConclusions(scenario.index)) {

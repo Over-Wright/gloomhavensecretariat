@@ -3945,6 +3945,8 @@
       "setPQProgress": "Set Personal Quest counter {1} to {2} for {0}",
       "setPartyAchievements": "Party achievements",
       "setPartyDonations": "Donations to {0}",
+      "setPartyFactionReputation": "%data.gh2eFaction:{0}% to {1}",
+      "setPartyImbuements": "Imbuements to {0}",
       "setPartyInspiration": "Inspiration to {1}",
       "setPartyLocation": "Party location '{0}'",
       "setPartyMorale": "Morale to {0}",

@@ -903,24 +903,28 @@ export class GameManager {
     return monsterData;
   }
 
-  prosperityLevel(): number {
-    let prosperityLevel = 1;
-    let prosperitySteps = GH_PROSPERITY_STEPS;
+  prosperitySteps(): number[] {
     if (this.fhRules()) {
-      prosperitySteps = FH_PROSPERITY_STEPS;
-    } else if (this.gh2eRules()) {
-      prosperitySteps = GH2E_PROSPERITY_STEPS;
+      return FH_PROSPERITY_STEPS;
     }
-    prosperitySteps.forEach((step) => {
-      if (this.prosperityTicks() > step) {
+    if (this.gh2eRules()) {
+      return GH2E_PROSPERITY_STEPS;
+    }
+    return GH_PROSPERITY_STEPS;
+  }
+
+  prosperityLevel(): number {
+    let prosperityLevel = 0;
+    this.prosperitySteps().forEach((step) => {
+      if (this.prosperityTicks() >= step) {
         prosperityLevel++;
       }
     });
     return prosperityLevel;
   }
 
-  prosperityTicks(): number {
-    let ticks = this.game.party.prosperity;
+  extraProsperity(): number {
+    let ticks = 0;
     if ((this.game.party.envelopeB && this.editionRules('gh')) || this.editionRules('cs')) {
       if (!this.editionRules('cs')) {
         ticks += 1;
@@ -936,8 +940,11 @@ export class GameManager {
       ticks += Math.floor(Math.min(this.game.party.donations, 100) / 5);
       ticks += Math.floor(Math.min(this.game.party.imbuement + 5, 80) / 10);
     }
-
     return ticks;
+  }
+
+  prosperityTicks(): number {
+    return this.game.party.prosperity + this.extraProsperity();
   }
 
   fhRules(gh2e: boolean = false): boolean {
@@ -1290,6 +1297,43 @@ export class GameManager {
     });
 
     return gameClock.sort((a, b) => b.clockIn - a.clockIn);
+  }
+
+  changeReputation(value: number) {
+    this.game.party.reputation += value;
+    if (this.game.party.reputation > 20) {
+      this.game.party.reputation = 20;
+    } else if (this.game.party.reputation < -20) {
+      this.game.party.reputation = -20;
+    }
+  }
+
+  changeMorale(value: number) {
+    this.game.party.morale += value;
+    if (this.game.party.morale > 20) {
+      this.game.party.morale = 20;
+    } else if (this.game.party.morale < 0) {
+      this.game.party.morale = 0;
+    }
+  }
+
+  changeProsperity(value: number, force: boolean = false) {
+    const levelMin = Math.max(...this.prosperitySteps().filter((n) => n <= this.prosperityTicks()));
+    const min = (force ? 0 : levelMin) - this.extraProsperity();
+    const max = Math.max(...this.prosperitySteps()) - this.extraProsperity();
+    this.game.party.prosperity = Math.min(max, Math.max(min, this.game.party.prosperity + value));
+  }
+
+  changeFactionReputation(faction: string, value: number, force: boolean = false) {
+    this.game.party.factionReputation[faction] = (this.game.party.factionReputation[faction] || 0) + value;
+    if (this.game.party.factionReputation[faction] > 12 && !force && !gameManager.gh2eFactionUnlock(faction)) {
+      this.game.party.factionReputation[faction] = 12;
+    }
+    if (this.game.party.factionReputation[faction] > 20) {
+      this.game.party.factionReputation[faction] = 20;
+    } else if (this.game.party.factionReputation[faction] < -10) {
+      this.game.party.factionReputation[faction] = -10;
+    }
   }
 
   gh2eFactionUnlocks(): string[] {

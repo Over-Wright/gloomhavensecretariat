@@ -918,7 +918,7 @@ export class GameManager {
   }
 
   extraProsperity(): number {
-    let ticks = 0;
+    let ticks = this.prosperitySteps()[0];
     if ((this.game.party.envelopeB && this.editionRules('gh')) || this.editionRules('cs')) {
       if (!this.editionRules('cs')) {
         ticks += 1;
@@ -1302,9 +1302,10 @@ export class GameManager {
   }
 
   changeProsperity(value: number, force: boolean = false) {
-    const levelMin = Math.max(...this.prosperitySteps().filter((n) => n <= this.prosperityTicks()));
+    const steps = this.prosperitySteps();
+    const levelMin = steps.findLast((n) => n <= this.prosperityTicks()) ?? steps[0];
     const min = (force ? 0 : levelMin) - this.extraProsperity();
-    const max = Math.max(...this.prosperitySteps()) - this.extraProsperity();
+    const max = steps[steps.length - 1] - this.extraProsperity();
     this.game.party.prosperity = ghsClamp(this.game.party.prosperity + value, min, max);
   }
 

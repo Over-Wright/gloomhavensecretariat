@@ -639,10 +639,18 @@ export class PartySheetDialogComponent implements OnInit {
     gameManager.stateManager.after();
   }
 
+  resetProsperity() {
+    gameManager.stateManager.before('resetPartyProsperity');
+    this.party.prosperity = 0;
+    gameManager.stateManager.after();
+  }
 
   setProsperity(value: number, force: boolean = false) {
     if (gameManager.prosperityTicks() === value) {
       value--;
+    }
+    if (value < this.prosperitySteps[gameManager.prosperityLevel() - 1] && !force) {
+      return;
     }
     gameManager.stateManager.before('setPartyProsperity', value);
     gameManager.changeProsperity(value - gameManager.prosperityTicks(), force);
@@ -1072,21 +1080,10 @@ export class PartySheetDialogComponent implements OnInit {
       this.prosperitySteps = GH_PROSPERITY_STEPS;
     }
 
-    if (this.fhSheet) {
+    if (this.fhSheet || this.gh2eSheet) {
       this.prosperityHighlightSteps = [];
-      this.prosperitySteps.forEach((step, index) => {
-        const start = index > 0 ? this.prosperitySteps[index - 1] + 1 : 0;
-        for (let i = start; i < step; i++) {
-          if ((i - start) % 5 === 4) {
-            this.prosperityHighlightSteps.push(i);
-          }
-        }
-      });
-    }
-    if (this.gh2eSheet) {
-      this.prosperityHighlightSteps = [];
-      for (let i = 0; i <= Math.max(...this.prosperitySteps); i++) {
-        if (i % 5 === 3) {
+      for (let i = 0; i <= this.prosperitySteps[this.prosperitySteps.length - 1]; i += 5) {
+        if (!this.prosperitySteps.includes(i)) {
           this.prosperityHighlightSteps.push(i);
         }
       }

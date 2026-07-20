@@ -818,7 +818,7 @@
                     class="checkbox"
                     [ngClass]="{
                       checked: gameManager.prosperityTicks() >= checkProsp,
-                      highlight: !prosperitySteps.includes(checkProsp) && prosperityHighlightSteps.includes(checkProsp)
+                      highlight: prosperityHighlightSteps.includes(checkProsp)
                     }"
                   >
                     <span
@@ -1177,7 +1177,7 @@
                   @let checkProsp = index + prospStart + 1;
                   <div
                     class="tick"
-                    [autoscroll]="gameManager.prosperityTicks() === checkProsp"
+                    [autoscroll]="(gameManager.prosperityTicks() || 1) === checkProsp"
                     [ngClass]="{ large: prosperitySteps.includes(checkProsp), section: prosperitySections[checkProsp] }"
                   >
                     @if (prosperitySteps.includes(checkProsp)) {

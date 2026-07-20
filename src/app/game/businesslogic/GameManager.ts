@@ -1318,9 +1318,10 @@ export class GameManager {
   }
 
   changeProsperity(value: number, force: boolean = false) {
-    const levelMin = Math.max(...this.prosperitySteps().filter((n) => n <= this.prosperityTicks()));
+    const steps = this.prosperitySteps();
+    const levelMin = steps.findLast((n) => n <= this.prosperityTicks()) ?? steps[0];
     const min = (force ? 0 : levelMin) - this.extraProsperity();
-    const max = Math.max(...this.prosperitySteps()) - this.extraProsperity();
+    const max = steps[steps.length - 1] - this.extraProsperity();
     this.game.party.prosperity = Math.min(max, Math.max(min, this.game.party.prosperity + value));
   }
 

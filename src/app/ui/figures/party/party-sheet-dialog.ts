@@ -1080,21 +1080,10 @@ export class PartySheetDialogComponent implements OnInit {
       this.prosperitySteps = GH_PROSPERITY_STEPS;
     }
 
-    if (this.fhSheet) {
+    if (this.fhSheet || this.gh2eSheet) {
       this.prosperityHighlightSteps = [];
-      this.prosperitySteps.forEach((step, index) => {
-        const start = this.prosperitySteps[index];
-        for (let i = start; i < step; i++) {
-          if ((i - start) % 5 === 4) {
-            this.prosperityHighlightSteps.push(i);
-          }
-        }
-      });
-    }
-    if (this.gh2eSheet) {
-      this.prosperityHighlightSteps = [];
-      for (let i = 1; i <= Math.max(...this.prosperitySteps); i++) {
-        if (i % 5 === 0) {
+      for (let i = 0; i <= this.prosperitySteps[this.prosperitySteps.length - 1]; i += 5) {
+        if (!this.prosperitySteps.includes(i)) {
           this.prosperityHighlightSteps.push(i);
         }
       }
